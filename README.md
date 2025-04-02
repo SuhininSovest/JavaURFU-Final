@@ -75,4 +75,15 @@ mvn spring-boot:run
 Сухинин АМ группы РИЗ-320045д 
 
 ![image](https://github.com/user-attachments/assets/5f09a15a-558e-41d7-8474-e5f9134cb3ed)
+![image](https://github.com/user-attachments/assets/641330ce-81f4-4083-93a3-90facd38f738)
+![image](https://github.com/user-attachments/assets/2138aa68-c878-4995-aa09-45ed2dee921c)
+![image](https://github.com/user-attachments/assets/05968842-a456-4d2a-bdf6-e882bb327c16)
+![image](https://github.com/user-attachments/assets/fcc7807e-cea8-4f4d-80b1-88cc715bea3a)
+![image](https://github.com/user-attachments/assets/c213c52d-6593-470e-a0b3-8182f1997b8e)
+![image](https://github.com/user-attachments/assets/3c56c333-38b0-4a0c-b99f-ce274f1d5668)
+![image](https://github.com/user-attachments/assets/5f9d4bf5-b666-44d7-9fba-cd80d758b650)
+![image](https://github.com/user-attachments/assets/13b99bba-67e1-4071-8984-74085067e7b6)
+
+
+
 
