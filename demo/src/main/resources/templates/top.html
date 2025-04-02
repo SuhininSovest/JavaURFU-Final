@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Таблица лидеров</title>
+    <style>
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .sort-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .sort-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+        .sort-button.rank {
+            background-color: #4CAF50;
+        }
+        .sort-button.name {
+            background-color: #2196F3;
+        }
+        .sort-button.netWorth {
+            background-color: #FF9800;
+        }
+        .sort-button.age {
+            background-color: #9C27B0;
+        }
+        .sort-button.country {
+            background-color: #E91E63;
+        }
+        .sort-button.industry {
+            background-color: #00BCD4;
+        }
+        .sort-button.score {
+            background-color: #795548;
+        }
+        .sort-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .sort-button.active {
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+        .sort-group {
+            display: flex;
+            gap: 5px;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .form-header:hover {
+            opacity: 0.8;
+        }
+        .form-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .form-container.collapsed .form-content {
+            max-height: 0;
+        }
+        .toggle-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0 10px;
+            transition: transform 0.3s ease;
+        }
+        .form-container.collapsed .toggle-button {
+            transform: rotate(-90deg);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .submit-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+        .form-title {
+            margin-top: 0;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .edit-button, .delete-button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: white;
+        }
+        .edit-button {
+            background-color: #2196F3;
+        }
+        .delete-button {
+            background-color: #f44336;
+        }
+        .edit-button:hover {
+            background-color: #1976D2;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .close-button:hover {
+            color: #000;
+        }
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .search-input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        .nav-button {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .chart-button {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .chart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Forbes Analytics</h1>
+        <p>Аналитика Forbes от студента группы РИЗ-320045д</p>
+    </div>
+
+    <div class="container">
+        <div class="nav-buttons">
+            <a href="/top/charts" class="nav-button">Перейти к графикам →</a>
+            <a href="/top/tasks" class="nav-button">Перейти к заданиям →</a>
+        </div>
+        <h1>Таблица лидеров</h1>
+        
+        <div class="form-container collapsed" id="formContainer">
+            <div class="form-header" onclick="toggleForm()">
+                <h2 class="form-title">Добавить нового лидера</h2>
+                <button class="toggle-button">▼</button>
+            </div>
+            <div class="form-content">
+                <form th:action="@{/top/add}" method="post">
+                    <div class="form-group">
+                        <label for="rank">Ранг:</label>
+                        <input type="number" id="rank" name="rank" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Имя:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="netWorth">Состояние:</label>
+                        <input type="text" id="netWorth" name="netWorth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Возраст:</label>
+                        <input type="number" id="age" name="age" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Страна:</label>
+                        <input type="text" id="country" name="country" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="industry">Индустрия:</label>
+                        <input type="text" id="industry" name="industry" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="score">Счет:</label>
+                        <input type="text" id="score" name="score" required>
+                    </div>
+                    <button type="submit" class="submit-button">Добавить</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск по таблице...">
+        </div>
+
+        <div class="sort-buttons">
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='rank',sortOrder='asc')}" 
+                   th:class="'sort-button rank' + (${currentSortField == 'rank' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Ранг ↑
+                </a>
+                <a th:href="@{/top(sortField='rank',sortOrder='desc')}" 
+                   th:class="'sort-button rank' + (${currentSortField == 'rank' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Ранг ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='name',sortOrder='asc')}" 
+                   th:class="'sort-button name' + (${currentSortField == 'name' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Имя ↑
+                </a>
+                <a th:href="@{/top(sortField='name',sortOrder='desc')}" 
+                   th:class="'sort-button name' + (${currentSortField == 'name' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Имя ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='netWorth',sortOrder='asc')}" 
+                   th:class="'sort-button netWorth' + (${currentSortField == 'netWorth' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Состояние ↑
+                </a>
+                <a th:href="@{/top(sortField='netWorth',sortOrder='desc')}" 
+                   th:class="'sort-button netWorth' + (${currentSortField == 'netWorth' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Состояние ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='age',sortOrder='asc')}" 
+                   th:class="'sort-button age' + (${currentSortField == 'age' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Возраст ↑
+                </a>
+                <a th:href="@{/top(sortField='age',sortOrder='desc')}" 
+                   th:class="'sort-button age' + (${currentSortField == 'age' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Возраст ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='country',sortOrder='asc')}" 
+                   th:class="'sort-button country' + (${currentSortField == 'country' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Страна ↑
+                </a>
+                <a th:href="@{/top(sortField='country',sortOrder='desc')}" 
+                   th:class="'sort-button country' + (${currentSortField == 'country' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Страна ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='industry',sortOrder='asc')}" 
+                   th:class="'sort-button industry' + (${currentSortField == 'industry' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Индустрия ↑
+                </a>
+                <a th:href="@{/top(sortField='industry',sortOrder='desc')}" 
+                   th:class="'sort-button industry' + (${currentSortField == 'industry' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Индустрия ↓
+                </a>
+            </div>
+            <div class="sort-group">
+                <a th:href="@{/top(sortField='score',sortOrder='asc')}" 
+                   th:class="'sort-button score' + (${currentSortField == 'score' && currentSortOrder == 'asc'} ? ' active' : '')">
+                    Счет ↑
+                </a>
+                <a th:href="@{/top(sortField='score',sortOrder='desc')}" 
+                   th:class="'sort-button score' + (${currentSortField == 'score' && currentSortOrder == 'desc'} ? ' active' : '')">
+                    Счет ↓
+                </a>
+            </div>
+        </div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Ранг</th>
+                    <th>Имя</th>
+                    <th>Состояние</th>
+                    <th>Возраст</th>
+                    <th>Страна</th>
+                    <th>Компания</th>
+                    <th>Индустрия</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="top : ${tops}">
+                    <td th:text="${top.rank}"></td>
+                    <td th:text="${top.name}"></td>
+                    <td th:text="${top.netWorth}"></td>
+                    <td th:text="${top.age}"></td>
+                    <td th:text="${top.country}"></td>
+                    <td th:text="${top.score}"></td>
+                    <td th:text="${top.industry}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="edit-button" th:onclick="'openEditModal(' + ${top.rank} + ')'">Изменить</button>
+                            <form th:action="@{/top/delete/{rank}(rank=${top.rank})}" method="post" style="display: inline;">
+                                <button type="submit" class="delete-button" onclick="return confirm('Вы уверены, что хотите удалить эту запись?')">Удалить</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Модальное окно для редактирования -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeEditModal()">&times;</span>
+            <h2>Редактировать лидера</h2>
+            <form id="editForm" method="post">
+                <div class="form-group">
+                    <label for="editRank">Ранг:</label>
+                    <input type="number" id="editRank" name="rank" required>
+                </div>
+                <div class="form-group">
+                    <label for="editName">Имя:</label>
+                    <input type="text" id="editName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editNetWorth">Состояние:</label>
+                    <input type="text" id="editNetWorth" name="netWorth" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAge">Возраст:</label>
+                    <input type="number" id="editAge" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCountry">Страна:</label>
+                    <input type="text" id="editCountry" name="country" required>
+                </div>
+                <div class="form-group">
+                    <label for="editIndustry">Индустрия:</label>
+                    <input type="text" id="editIndustry" name="industry" required>
+                </div>
+                <div class="form-group">
+                    <label for="editScore">Счет:</label>
+                    <input type="text" id="editScore" name="score" required>
+                </div>
+                <button type="submit" class="submit-button">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleForm() {
+            const container = document.getElementById('formContainer');
+            container.classList.toggle('collapsed');
+        }
+
+        function openEditModal(rank) {
+            const modal = document.getElementById('editModal');
+            const form = document.getElementById('editForm');
+            form.action = `/top/edit/${rank}`;
+            
+            // Получаем данные строки
+            const row = event.target.closest('tr');
+            const cells = row.cells;
+            
+            // Заполняем форму данными
+            document.getElementById('editRank').value = cells[0].textContent;
+            document.getElementById('editName').value = cells[1].textContent;
+            document.getElementById('editNetWorth').value = cells[2].textContent;
+            document.getElementById('editAge').value = cells[3].textContent;
+            document.getElementById('editCountry').value = cells[4].textContent;
+            document.getElementById('editScore').value = cells[5].textContent;
+            document.getElementById('editIndustry').value = cells[6].textContent;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'none';
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Добавляем обработку клавиши Escape для закрытия модального окна
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeEditModal();
+            }
+        });
+
+        // Предотвращаем закрытие модального окна при клике на форму
+        document.querySelector('.modal-content').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Функция поиска
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('dataTable');
+            const rows = table.getElementsByTagName('tr');
+            let hasVisibleRows = false;
+
+            // Начинаем с 1, чтобы пропустить заголовок таблицы
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+
+                // Проверяем каждую ячейку в строке
+                for (let j = 0; j < cells.length - 1; j++) { // -1 чтобы исключить колонку с кнопками
+                    const cell = cells[j];
+                    if (cell) {
+                        const text = cell.textContent || cell.innerText;
+                        if (text.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Показываем или скрываем строку
+                row.style.display = found ? '' : 'none';
+                if (found) hasVisibleRows = true;
+            }
+
+            // Показываем сообщение, если нет результатов
+            let noResults = document.getElementById('noResults');
+            if (!hasVisibleRows) {
+                if (!noResults) {
+                    noResults = document.createElement('div');
+                    noResults.id = 'noResults';
+                    noResults.className = 'no-results';
+                    noResults.textContent = 'Ничего не найдено';
+                    table.parentNode.insertBefore(noResults, table.nextSibling);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
+        }
+
+        // Добавляем обработчик события для поиска
+        document.getElementById('searchInput').addEventListener('keyup', searchTable);
+    </script>
+</body>
+</html> 
