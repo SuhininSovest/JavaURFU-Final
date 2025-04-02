@@ -72,4 +72,7 @@ mvn spring-boot:run
 
 ## Автор
 
-Студент группы РИЗ-320045д 
+Сухинин АМ группы РИЗ-320045д 
+
+![image](https://github.com/user-attachments/assets/5f09a15a-558e-41d7-8474-e5f9134cb3ed)
+
